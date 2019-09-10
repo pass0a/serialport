@@ -1,0 +1,40 @@
+{
+	"name": "@passoa/pack",
+	"version": "1.0.8",
+	"description": "",
+	"main": "lib/index.js",
+	"types": "lib/src/index.d.ts",
+	"repository": "git+https://github.com/pass0a/pack.git",
+	"author": "losper",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/pass0a/pack/issues"
+	},
+	"homepage": "https://github.com/pass0a/pack#readme",
+	"devDependencies": {
+		"@babel/core": "^7.5.5",
+		"@babel/preset-env": "^7.5.5",
+		"@passoa/tap": "^1.0.4",
+		"@types/mkdirp": "^0.5.2",
+		"@types/node": "^12.6.8",
+		"@types/tape": "^4.2.33",
+		"babel-loader": "^8.0.6",
+		"cross-env": "^5.2.0",
+		"fs-extra": "^8.1.0",
+		"rimraf": "^2.6.3",
+		"ts-loader": "^6.0.4",
+		"typescript": "^3.5.3",
+		"webpack": "^4.36.1",
+		"webpack-bundle-analyzer": "^3.3.2",
+		"webpack-cli": "^3.3.6"
+	},
+	"scripts": {
+		"clean": "rimraf dist",
+		"build": "npm run clean && cross-env opt=build webpack",
+		"dev": "cross-env opt=dev webpack",
+		"test": "node test/test.js",
+		"pretest": "npm run build",
+		"pm-android": "node node_modules/@passoa/pm -t android",
+		"pm-msvc": "node node_modules/@passoa/pm -t msvc"
+	}
+}
