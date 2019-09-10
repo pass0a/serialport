@@ -56,13 +56,19 @@ export class serialport extends Duplex {
 			this.opt.character_size,
 			this.onEvent.bind(this)
 		);
+		this.on('error', (code: number, msg: string) => {
+			console.log('error in serial_port:', code, msg);
+		});
+		console.log(name);
 	}
 	onEvent(ev: string, ...args: any[]) {
-		console.log(ev);
-		this.emit(ev, args);
+		this.emit(ev, ...args);
 	}
 	_read() {}
 	_write(chunk: any, encoding: string, callback: (error?: Error | null) => void) {
+		if (chunk.constructor.name != 'Buffer') {
+			chunk = Buffer.from(chunk);
+		}
 		__passoa_net_write_serialport(this.handle, chunk);
 		callback();
 	}

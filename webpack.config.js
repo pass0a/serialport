@@ -1,7 +1,7 @@
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const path = require('path');
 const fs = require('fs-extra');
-let opt_dist = 'stage';
+let opt_dist = 'lib';
 let opt_watch = false;
 module.exports = (env) => {
 	if (process.env.opt == 'dev') {

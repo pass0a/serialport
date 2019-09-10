@@ -1,6 +1,6 @@
 {
-	"name": "@passoa/pack",
-	"version": "1.0.8",
+	"name": "@passoa/serialport",
+	"version": "1.0.0",
 	"description": "",
 	"main": "lib/index.js",
 	"types": "lib/src/index.d.ts",
