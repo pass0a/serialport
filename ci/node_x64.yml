@@ -1,0 +1,56 @@
+steps:
+- task: Npm@1
+  inputs:
+    command: 'install'
+    workingDir: './'
+  displayName: 'install npm submodules'
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      npm run windows_x64
+      rm lib/*.ilk
+      rm lib/*d.dll
+      mv lib/serialport.pdb serialport.pdb
+      ls lib
+  displayName: 'build windows_x64'
+
+- task: cURLUploader@2
+  displayName: 'Upload pdb'
+  inputs:
+    files: 'serialport.pdb'
+    serviceEndpoint: 'csding.net'
+    remotePath: 'repertory/cxb/serialport.pdb?version=$(Build.SourceBranchName)-windows-x64'
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+
+- task: ArchiveFiles@2
+  displayName: 'Archive lib'
+  inputs:
+    rootFolderOrFile: lib
+    includeRootFolder: false
+    archiveType: tar
+    archiveFile: 'serialport.tar.gz'
+
+- task: cURLUploader@2
+  displayName: 'Upload serialport.node'
+  inputs:
+    files: 'serialport.tar.gz'
+    serviceEndpoint: 'csding.net'
+    remotePath: 'repertory/cxb/serialport.tar.gz?version=$(Build.SourceBranchName)-windows-x64'
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+  
+- task: Npm@1
+  inputs:
+    command: 'custom'
+    workingDir: './'
+    customCommand: 'run build'
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+  
+- task: Npm@1
+  inputs:
+    command: 'publish'
+    workingDir: './'
+    customRegistry: 'useFeed'
+    publishEndpoint: 'npmjs.org'
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))

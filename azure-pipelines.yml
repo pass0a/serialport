@@ -1,38 +1,25 @@
-# Node.js
-# Build a general Node.js project with npm.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
 
 trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    - refs/tags/v*
+    - dev
+pr:
 - master
 
-pool:
-  name: Hosted VS2017
-  demands: npm
 
-steps:
-- task: Npm@1
-  displayName: 'npm install'
-  inputs:
-    verbose: false
 
-- task: Npm@1
-  displayName: 'npm custom'
-  inputs:
-    command: custom
-    verbose: false
-    customCommand: 'run build'
 
-- script: |
-   ls lib
-   ls lib/src
-   
-  displayName: 'Command Line Script'
-
-- task: Npm@1
-  displayName: 'npm publish'
-  inputs:
-    command: publish
-    verbose: false
-    publishEndpoint: 'passoa@npm'
-  condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+jobs:
+  - job: build_x64
+    pool:
+      name: Hosted VS2017
+    steps:
+      - template: ci/install.yml
+      - template: ci/node_x64.yml

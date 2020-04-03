@@ -1,16 +1,7 @@
 import { Duplex } from 'stream';
-declare function __passoa_net_connect_serialport(
-	name: string,
-	flow_control: number,
-	baud_rate: number,
-	parity: number,
-	stop_bits: number,
-	character_size: number,
-	cb: (ev: string, ...args: any[]) => void
-): any
-declare function __passoa_net_write_serialport(sock: any, chunk: Buffer): number
-declare function __passoa_net_close_serialport(sock: any): number
+import { isBuffer } from 'util';
 
+let bindings = require('./serialport.node');
 export interface UartOpts {
 	flow_control?: number;
 	baud_rate?: number;
@@ -47,32 +38,25 @@ export class serialport extends Duplex {
 				this.opt[key] = options[key];
 			}
 		}
-		this.handle = __passoa_net_connect_serialport(
-			name,
-			this.opt.flow_control,
-			this.opt.baud_rate,
-			this.opt.parity,
-			this.opt.stop_bits,
-			this.opt.character_size,
-			this.onEvent.bind(this)
-		);
+		console.log(this instanceof serialport);
+		this.handle = bindings.open(name, options, this.onEvent.bind(this));
 		this.on('error', (code: number, msg: string) => {
 			console.log('error in serial_port:', code, msg);
 		});
 		console.log(name);
 	}
 	onEvent(ev: string, ...args: any[]) {
+		console.log(ev);
 		this.emit(ev, ...args);
 	}
-	_read() {}
 	_write(chunk: any, encoding: string, callback: (error?: Error | null) => void) {
-		if (chunk.constructor.name != 'Buffer') {
+		if (!isBuffer(chunk)) {
 			chunk = Buffer.from(chunk);
 		}
-		__passoa_net_write_serialport(this.handle, chunk);
+		bindings.write(this.handle, chunk);
 		callback();
 	}
 	_final() {
-		__passoa_net_close_serialport(this.handle);
+		bindings.close(this.handle);
 	}
 }
