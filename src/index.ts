@@ -1,7 +1,7 @@
 import { Duplex } from 'stream';
 import { isBuffer } from 'util';
 
-let bindings = require('./serialport.node');
+let bindings = require('bingdings')('serialport');
 export interface UartOpts {
 	flow_control?: number;
 	baud_rate?: number;
